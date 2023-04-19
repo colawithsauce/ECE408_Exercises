@@ -13,8 +13,8 @@
 #include <string>
 
 // Matrix multiplication cuda kernel, include from matrix_multi_kernel.cu
-extern __global__ void matrix_multi_kernel(double *A_d, double *B_d, double *C_d, int M, int N, int S);
-extern cudaError_t matrix_multi(const double *A_h, const double *B_h, double *C_h, int M, int N, int S);
+__global__ void matrix_multi_kernel(double *A_d, double *B_d, double *C_d, int M, int N, int S);
+cudaError_t matrix_multi(const double *A_h, const double *B_h, double *C_h, int M, int N, int S);
 
 template <typename T> std::string matrix2str(T *mat, int y, int x)
 {
