@@ -1,6 +1,7 @@
-#include "cuda_runtime_api.h"
-#include "driver_types.h"
+#include "../cuda_alias.h"
+#include "../matrix_print.h"
 
+#include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
@@ -12,70 +13,73 @@
 #include <random>
 #include <string>
 
-// Matrix multiplication cuda kernel, include from matrix_multi_kernel.cu
-__global__ void matrix_multi_kernel(double* A_d, double* B_d, double* C_d, int M, int N, int S);
-cudaError_t matrix_multi(const double* A_h, const double* B_h, double* C_h, int M, int N, int S);
+const int SIZE = 2;
+const int M = SIZE, N = SIZE, S = SIZE;
 
-template <typename T>
-std::string matrix2str(T* mat, int y, int x)
+extern cudaError_t
+matrix_multi(const double* A_h, const double* B_h, double* C_h_2, int M, int N, int S);
+
+extern bool matrix_same(const double* matA_h, const double* matB_h, int M, int N);
+
+template <class T>
+void fill_randomly(T* mat, int M, int N)
 {
-    std::string s;
-    s += "[";
-    for (int i = 0; i != y; i++) {
-        s += "[";
-        for (int j = 0; j != x; j++) {
-            if (j != 0)
-                s += ", ";
-            s += std::to_string(mat[j + i * x]);
-        }
-
-        s += "]";
+    for (int i = 0; i < M * N; ++i) {
+        mat[i] = rand() % 100 / 10.0;
     }
-
-    s += "]";
-
-    return s;
 }
 
-int main(int argc, char** argv)
+template <class T>
+void fill_eye(T* mat, int M, int N)
 {
-    int M, N, S;
-    int x = (argc > 1) ? atoi(argv[1]) : 1024;
-    N = S = M = x;
-
-    double *A_h = nullptr, *B_h = nullptr, *C_h = nullptr;
-    A_h = new double[M * S];
-    B_h = new double[S * N];
-    C_h = new double[M * N];
-
-    srand(time(NULL));
-
-    for (int i = 0; i != M; i++) {
-        for (int j = 0; j != S; j++) {
-            A_h[i * S + j] = rand() % 100 / 10.0;
+    for (int i = 0; i < M; ++i) {
+        for (int j = 0; j < N; ++j) {
+            if (i == j)
+                mat[i * N + j] = 1;
+            else
+                mat[i * N + j] = 0;
         }
     }
+}
 
-    for (int i = 0; i != S; i++) {
-        for (int j = 0; j != N; j++) {
-            B_h[i * N + j] = rand() % 100 / 10.0;
-        }
+bool matrix_same_sync(const double* matA, const double* matB, int M, int N)
+{
+    for (int i = 0; i < M * N; ++i) {
+        if (matA != matB)
+            return false;
     }
 
-    for (int i = 0; i != M; i++) {
-        for (int j = 0; j != N; j++) {
-            C_h[i * N + j] = 0.0;
-        }
-    }
+    return true;
+}
 
-    clock_t start = clock();
-    matrix_multi((const double*)A_h, (const double*)B_h, (double*)C_h, M, N, S);
-    float duration = (float)(clock() - start) / CLOCKS_PER_SEC;
+int main()
+{
+    cudaError_t err = cudaSuccess;
+    int devCount;
+    cudaDeviceProp devProp;
 
-    std::cout << "Matrix Multi: " << duration << " s" << std::endl;
+    cudaGetDeviceCount(&devCount);
 
-    /* std::cout << matrix2str((double *)A_h, M, S) << "*" << matrix2str((double *)B_h, S, N) << "=" */
-    /*           << matrix2str((double *)C_h, M, N) << std::endl; */
+    assert(devCount != 0);
 
+    // malloc the matrix
+    double* A_h = (double*)malloc(M * S * sizeof(double));
+    double* B_h = (double*)malloc(S * N * sizeof(double));
+    double* C_h_2 = (double*)malloc(M * N * sizeof(double) * 2); // this would contains two matrix.
+    double* C_h_1 = C_h_2 + M * N;
+
+    fill_randomly(A_h, M, N);
+    fill_eye(B_h, M, N);
+
+    // Check if two matrix the same, and TODO the correctness of the result.
+    err = matrix_multi(A_h, B_h, C_h_2, M, N, S);
+    CUDA_CHECK(err, "Matrix Multi");
+
+    assert(matrix_same(C_h_1, C_h_2, M, N));
+    assert(matrix_same(A_h, B_h, M, N));
+
+    /* assert(matrix_same_sync(C_h_1, C_h_2, M, N)); */
+    assert(matrix_same_sync(A_h, B_h, M, N));
+Error:
     return 0;
 }

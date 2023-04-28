@@ -50,7 +50,7 @@ matrix2str(T* mat, int y, int x)
 int main(int argc, char** argv)
 {
     int M, N, S;
-    int x = (argc > 1) ? atoi(argv[1]) : 1024;
+    int x = (argc > 1) ? atoi(argv[1]) : 2;
     N = S = M = x;
 
     double *A_h = nullptr, *B_h = nullptr, *C_h = nullptr;
@@ -68,7 +68,7 @@ int main(int argc, char** argv)
 
     for (int i = 0; i != S; i++) {
         for (int j = 0; j != N; j++) {
-            B_h[i * N + j] = rand() % 100 / 10.0;
+            B_h[i * N + j] = (i == j) ? 1 : 0;
         }
     }
 
@@ -84,9 +84,8 @@ int main(int argc, char** argv)
 
     std::cout << "Matrix Multi: " << duration << " s" << std::endl;
 
-    /* std::cout << matrix2str((double *)A_h, M, S) << "*" << matrix2str((double
-     * *)B_h, S, N) << "=" */
-    /*           << matrix2str((double *)C_h, M, N) << std::endl; */
+    std::cout << matrix2str((double*)A_h, M, S) << "*" << matrix2str((double*)B_h, S, N) << "="
+              << matrix2str((double*)C_h, M, N) << std::endl;
 
     return 0;
 }

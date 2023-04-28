@@ -1,3 +1,4 @@
+#include "../cuda_alias.h"
 #include <bits/types/clock_t.h>
 #include <chrono>
 #include <cstdio>
@@ -5,27 +6,6 @@
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 #include <locale>
-
-// nvcc does not seem to like variadic macros, so we have to define
-// one for each kernel parameter list:
-#ifdef __CUDACC__
-#define KERNEL_ARGS2(grid, block) <<< grid, block >>>
-#define KERNEL_ARGS3(grid, block, sh_mem) <<< grid, block, sh_mem >>>
-#define KERNEL_ARGS4(grid, block, sh_mem, stream) \
-<<< grid, block, sh_mem, stream >>>
-#else
-#define KERNEL_ARGS2(grid, block)
-#define KERNEL_ARGS3(grid, block, sh_mem)
-#define KERNEL_ARGS4(grid, block, sh_mem, stream)
-#endif
-
-#define PRINT(msg) \
-    printf("%s:\nat : FILE %s\nat: LINE %d", msg, __FILE__, __LINE__);
-#define CUDA_CHECK(err, msg)  \
-    if (err != cudaSuccess) { \
-        PRINT(msg);           \
-        goto Error;           \
-    }
 
 __global__ void
 matrix_multi_kernel(double* A_d, double* B_d, double* C_d, int M, int N, int S)
