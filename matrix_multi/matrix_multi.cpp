@@ -13,7 +13,6 @@
 #include "../matrix_print.h"
 
 // Matrix multiplication cuda kernel, include from matrix_multi_kernel.cu
-extern __global__ void matrix_multi_kernel(double* A_d, double* B_d, double* C_d, int M, int N, int S);
 extern cudaError_t matrix_multi(const double* A_h, const double* B_h, double* C_h, int M, int N, int S);
 
 int main(int argc, char** argv)
@@ -26,8 +25,6 @@ int main(int argc, char** argv)
     A_h = new double[M * S];
     B_h = new double[S * N];
     C_h = new double[M * N];
-
-    srand(time(NULL));
 
     for (int i = 0; i != M; i++) {
         for (int j = 0; j != S; j++) {

@@ -1,4 +1,5 @@
 #include <bits/types/clock_t.h>
+#include <cassert>
 #include <cstdio>
 #include <ctime>
 #include <cuda_runtime.h>
@@ -31,8 +32,11 @@ matrix_multi(const double* A_h, const double* B_h, double* C_h, int M, int N, in
     double elapsed = 0;
     cudaError_t err = cudaSuccess;
 
-    dim3 dimGrid = { (unsigned int)ceil(N / 128.0), (unsigned int)ceil(M / 128.0),
-        1 };
+    int count = 0;
+    cudaGetDeviceCount(&count);
+    assert(count != 0);
+
+    dim3 dimGrid = { (unsigned int)ceil(N / 128.0), (unsigned int)ceil(M / 128.0), 1 };
     dim3 dimBlock = { 128, 128, 1 };
 
     err = cudaMalloc((void**)&A_d, M * S * sizeof(double));
