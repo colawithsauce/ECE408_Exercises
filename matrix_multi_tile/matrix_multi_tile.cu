@@ -9,25 +9,24 @@
 //   B_d: S * N matrix
 //   C_d: M * N matrix
 //   And we assume that blockDim.x == blocDim.y && blockDim.x == TILE_WIDTH
-template <typename T>
 __global__ void
-matrix_multi_tile_kernel(const T* A_d, const T* B_d, T* C_d, int M, int N, int S, int nSZa, int nBlkWidth)
+matrix_multi_tile_kernel(const double* A_d, const double* B_d, double* C_d, int M, int N, int S, int nSZa, int nBlkWidth)
 {
     // Initialize space for tiling multiplication
-    extern __shared__ T Ads_Bds[]; // Defined in the kernel arguments
-    T* Ads = Ads_Bds;
-    T* Bds = Ads_Bds + nSZa;
+    extern __shared__ double Ads_Bds[]; // Defined in the kernel arguments
+    double* Ads = Ads_Bds;
+    double* Bds = Ads_Bds + nSZa;
 
     const int bx = blockIdx.x;
     const int by = blockIdx.y;
     const int tx = threadIdx.x;
     const int ty = threadIdx.y;
 
-    int Row = nBlkWidth * blockIdx.y + threadIdx.y;
-    int Col = nBlkWidth * blockIdx.x + threadIdx.x;
+    int Row = nBlkWidth * by + threadIdx.y;
+    int Col = nBlkWidth * bx + threadIdx.x;
 
     // do matrix multiplication
-    T Cvalue = 0;
+    double Cvalue = 0;
     for (int ph = 0; ph < ceil(max((float)M / nBlkWidth, (float)N / nBlkWidth)); ph++) {
         if (Row < M && (ph * nBlkWidth + tx) < S) {
             Ads[ty * nBlkWidth + tx] = A_d[Row * S + (ph * nBlkWidth + tx)];
