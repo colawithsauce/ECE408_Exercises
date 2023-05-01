@@ -14,7 +14,7 @@
 #define KERNEL_ARGS4(grid, block, sh_mem, stream)
 #endif
 
-#define PRINT(msg) printf("ERRORCODE: %d:\t %s:\nat : FILE %s\nat: LINE %d\n", err, msg, __FILE__, __LINE__);
+#define PRINT(msg) printf("ERROR: %s:\t %s:\nat : FILE %s\nat: LINE %d\n", cudaGetErrorString(err), msg, __FILE__, __LINE__);
 #define CUDA_CHECK(err, msg)  \
     if (err != cudaSuccess) { \
         PRINT(msg);           \
