@@ -33,10 +33,10 @@ matrix_multi(const double* A_h, const double* B_h, double* C_h, int M, int N, in
 
     int count = 0;
     cudaGetDeviceCount(&count);
-    assert(count != 0);
+    printf("You have %d devices\n", count);
 
-    dim3 dimGrid = { (unsigned int)ceil(N / 128.0), (unsigned int)ceil(M / 128.0), 1 };
-    dim3 dimBlock = { 128, 128, 1 };
+    dim3 dimGrid = { (unsigned int)ceil(N / 32.0), (unsigned int)ceil(M / 32.0), 1 };
+    dim3 dimBlock = { 32, 32, 1 };
 
     err = cudaMalloc((void**)&A_d, M * S * sizeof(double));
     CUDA_CHECK(err, "Can't cudaMalloc");
