@@ -54,6 +54,8 @@ matrix_multi(const double* A_h, const double* B_h, double* C_h, int M, int N, in
     CUDA_CHECK(err, "Can't cudaMemcpy");
 
     matrix_multi_kernel KERNEL_ARGS2(dimGrid, dimBlock)(A_d, B_d, C_d, M, N, S);
+    err = cudaGetLastError();
+    CUDA_CHECK(err, "ERROR when call");
 
     err = cudaMemcpy(C_h, C_d, M * N * sizeof(double), cudaMemcpyDeviceToHost);
     CUDA_CHECK(err, "Can't cudaMemcpy");
