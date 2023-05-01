@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <ctime>
 #include <cuda_runtime.h>
+#include <cuda_runtime_api.h>
 #include <device_launch_parameters.h>
 
 #include "../cuda_alias.h"
@@ -28,8 +29,6 @@ cudaError_t
 matrix_multi(const double* A_h, const double* B_h, double* C_h, int M, int N, int S)
 {
     double *A_d, *B_d, *C_d;
-    clock_t start = clock();
-    double elapsed = 0;
     cudaError_t err = cudaSuccess;
 
     int count = 0;
@@ -54,10 +53,7 @@ matrix_multi(const double* A_h, const double* B_h, double* C_h, int M, int N, in
     err = cudaMemcpy(B_d, B_h, N * S * sizeof(double), cudaMemcpyHostToDevice);
     CUDA_CHECK(err, "Can't cudaMemcpy");
 
-    start = clock();
     matrix_multi_kernel KERNEL_ARGS2(dimGrid, dimBlock)(A_d, B_d, C_d, M, N, S);
-    elapsed = 1000 * (double)(clock() - start) / CLOCKS_PER_SEC; // in milliseconds
-    printf("normal matrix_multi: %lf ms\n", elapsed);
 
     err = cudaMemcpy(C_h, C_d, M * N * sizeof(double), cudaMemcpyDeviceToHost);
     CUDA_CHECK(err, "Can't cudaMemcpy");

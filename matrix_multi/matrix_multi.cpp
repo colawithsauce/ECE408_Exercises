@@ -44,11 +44,7 @@ int main(int argc, char** argv)
         }
     }
 
-    clock_t start = clock();
     matrix_multi((const double*)A_h, (const double*)B_h, (double*)C_h, M, N, S);
-    float duration = (float)(clock() - start) / CLOCKS_PER_SEC;
-
-    std::cout << "Matrix Multi: " << duration << " s" << std::endl;
 
     std::cout << matrix2str((double*)A_h, M, S) << "*" << matrix2str((double*)B_h, S, N) << "="
               << matrix2str((double*)C_h, M, N) << std::endl;
