@@ -2,7 +2,7 @@
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 
-#define TILE_WIDTH 16
+// #define TILE_WIDTH 16
 
 // @param:
 //   A_d: M * S matrix
