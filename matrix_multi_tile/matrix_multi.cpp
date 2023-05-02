@@ -19,6 +19,9 @@ const int M = SIZE, N = SIZE, S = SIZE;
 extern cudaError_t
 matrix_multi(const double* A_h, const double* B_h, double* C_h_2, int M, int N, int S);
 
+extern cudaError_t
+matrix_multi_tile(const double* A_h, const double* B_h, double* C_h_2, int M, int N, int S);
+
 extern bool matrix_same(const double* matA_h, const double* matB_h, int M, int N);
 
 template <class T>
@@ -65,20 +68,23 @@ int main()
     // malloc the matrix
     double* A_h = (double*)malloc(M * S * sizeof(double));
     double* B_h = (double*)malloc(S * N * sizeof(double));
-    double* C_h_2 = (double*)malloc(M * N * sizeof(double) * 2); // this would contains two matrix.
-    double* C_h_1 = C_h_2 + M * N;
+    double* C_h_1 = (double*)malloc(M * N * sizeof(double)); // this would contains two matrix.
+    double* C_h_2 = (double*)malloc(M * N * sizeof(double)); // this would contains two matrix.
 
     fill_randomly(A_h, M, N);
     fill_eye(B_h, M, N);
 
     // Check if two matrix the same, and TODO the correctness of the result.
-    err = matrix_multi(A_h, B_h, C_h_2, M, N, S);
-    CUDA_CHECK(err, "Matrix Multi");
+    err = matrix_multi(A_h, B_h, C_h_1, M, N, S);
+    CUDA_CHECK(err, "Matrix Multi normal");
+
+    err = matrix_multi_tile(A_h, B_h, C_h_2, M, N, S);
+    CUDA_CHECK(err, "Matrix Multi tile");
 
     assert(matrix_same(C_h_1, C_h_2, M, N));
     assert(matrix_same(A_h, B_h, M, N));
 
-    /* assert(matrix_same_sync(C_h_1, C_h_2, M, N)); */
+    assert(matrix_same_sync(C_h_1, C_h_2, M, N));
     assert(matrix_same_sync(A_h, B_h, M, N));
 Error:
     return 0;
