@@ -143,7 +143,14 @@ matrix_multi_tile(const double* A_h, const double* B_h, double* C_h, int M, int 
     CUDA_CHECK(err, "Can't cudaMemcpy");
 
     start = clock();
-    matrix_multi_tile_kernel KERNEL_ARGS3(dimGrid, dimBlock, dimBlock.x * 2)(A_d, B_d, C_d, M, N, S, dimBlock.x * dimBlock.x, dimBlock.x);
+    matrix_multi_tile_kernel KERNEL_ARGS3(dimGrid, dimBlock, 1024 * 2 * sizeof(double))(A_d,
+        B_d,
+        C_d,
+        M,
+        N,
+        S,
+        1024,
+        32);
     elapsed = 1000 * (double)(clock() - start) / CLOCKS_PER_SEC; // in milliseconds
     printf("matrix_multi tile version:\t %lf ms\n", elapsed);
 
