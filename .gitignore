@@ -1,10 +1,5 @@
 *
-!**/*.c
-!**/*.cpp
-!**/*.cu
-!**/*.h
-!**/Makefile
-!**/.git*
-!**/*.md
-!**/CMakeLists.txt
-!**/compile_commands.json
+!*.*
+!*/
+/build/
+.gdb_history

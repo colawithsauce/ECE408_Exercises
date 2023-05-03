@@ -8,28 +8,10 @@
 #include <device_launch_parameters.h>
 #include <locale>
 
-__global__ void
-matrix_multi_kernel(double* A_d, double* B_d, double* C_d, int M, int N, int S)
-{
-    // A_d is M x S, while B_d is S x N
-    unsigned int col = threadIdx.x + blockDim.x * blockIdx.x;
-    unsigned int row = threadIdx.y + blockDim.y * blockIdx.y;
-
-    if (row < M && col < N) {
-        double sum = 0;
-        for (int i = 0; i != S; i++) {
-            sum += A_d[row * S + i] * B_d[i * S + col];
-        }
-
-        C_d[row * N + col] = sum;
-    }
-}
-
 // @param:
 //   A_d: M * S matrix
 //   B_d: S * N matrix
 //   C_d: M * N matrix
-//   And we assume that blockDim.x == blocDim.y && blockDim.x == TILE_WIDTH
 __global__ void
 matrix_multi_tile_kernel(const double* A_d, const double* B_d, double* C_d, int M, int N, int S, int nSZa, int nBlkWidth)
 {
@@ -75,49 +57,6 @@ matrix_multi_tile_kernel(const double* A_d, const double* B_d, double* C_d, int 
 }
 
 cudaError_t
-matrix_multi(const double* A_h, const double* B_h, double* C_h, int M, int N, int S)
-{
-    double *A_d, *B_d, *C_d;
-    clock_t start = clock();
-    double elapsed = 0;
-    cudaError_t err = cudaSuccess;
-
-    dim3 dimGrid = { (unsigned int)ceil(N / 32.0), (unsigned int)ceil(M / 32.0), 1 };
-    dim3 dimBlock = { 32, 32, 1 };
-
-    err = cudaMalloc((void**)&A_d, M * S * sizeof(double));
-    CUDA_CHECK(err, "Can't cudaMalloc");
-
-    err = cudaMalloc((void**)&B_d, N * S * sizeof(double));
-    CUDA_CHECK(err, "Can't cudaMalloc");
-
-    err = cudaMalloc((void**)&C_d, M * N * sizeof(double));
-    CUDA_CHECK(err, "Can't cudaMalloc");
-
-    err = cudaMemcpy(A_d, A_h, M * S * sizeof(double), cudaMemcpyHostToDevice);
-    CUDA_CHECK(err, "Can't cudaMemcpy");
-    err = cudaMemcpy(B_d, B_h, N * S * sizeof(double), cudaMemcpyHostToDevice);
-    CUDA_CHECK(err, "Can't cudaMemcpy");
-
-    start = clock();
-    matrix_multi_kernel KERNEL_ARGS2(dimGrid, dimBlock)(A_d, B_d, C_d, M, N, S);
-    elapsed = 1000 * (double)(clock() - start) / CLOCKS_PER_SEC; // in milliseconds
-    printf("normal matrix_multi:\t\t %lf ms\n", elapsed);
-
-    err = cudaGetLastError();
-    CUDA_CHECK(err, "Launch kernel");
-
-    err = cudaMemcpy(C_h, C_d, M * N * sizeof(double), cudaMemcpyDeviceToHost);
-    CUDA_CHECK(err, "Can't cudaMemcpy");
-Error:
-    cudaFree(A_d);
-    cudaFree(B_d);
-    cudaFree(C_d);
-
-    return err;
-}
-
-cudaError_t
 matrix_multi_tile(const double* A_h, const double* B_h, double* C_h, int M, int N, int S)
 {
     double *A_d, *B_d, *C_d;
@@ -142,8 +81,7 @@ matrix_multi_tile(const double* A_h, const double* B_h, double* C_h, int M, int 
     err = cudaMemcpy(B_d, B_h, N * S * sizeof(double), cudaMemcpyHostToDevice);
     CUDA_CHECK(err, "Can't cudaMemcpy");
 
-    start = clock();
-    matrix_multi_tile_kernel KERNEL_ARGS3(dimGrid, dimBlock, 1024 * 2 * sizeof(double))(A_d,
+    matrix_multi_tile_kernel<<<dimGrid, dimBlock, 1024 * 2 * sizeof(double)>>>(A_d,
         B_d,
         C_d,
         M,
@@ -151,8 +89,6 @@ matrix_multi_tile(const double* A_h, const double* B_h, double* C_h, int M, int 
         S,
         1024,
         32);
-    elapsed = 1000 * (double)(clock() - start) / CLOCKS_PER_SEC; // in milliseconds
-    printf("matrix_multi tile version:\t %lf ms\n", elapsed);
 
     err = cudaGetLastError();
     CUDA_CHECK(err, "Can't launch kernel matrix_multi_tile_kernel");
