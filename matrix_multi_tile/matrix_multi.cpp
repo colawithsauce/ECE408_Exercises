@@ -43,7 +43,7 @@ void fill_eye(T* mat, int M, int N)
 bool matrix_same_sync(const double* matA, const double* matB, int M, int N)
 {
     for (int i = 0; i < M * N; ++i) {
-        if (matA != matB)
+        if (matA[i] != matB[i])
             return false;
     }
 
@@ -61,17 +61,22 @@ int main()
     assert(devCount != 0);
 
     // malloc the matrix
-    double* A_h = (double*)malloc(M * S * sizeof(double));
-    double* B_h = (double*)malloc(S * N * sizeof(double));
-    double* C_h = (double*)malloc(M * N * sizeof(double)); // this would contains two matrix.
+    double* A_h = (double*)malloc(SIZE * SIZE * sizeof(double));
+    double* B_h = (double*)malloc(SIZE * SIZE * sizeof(double));
+    double* C_h = (double*)malloc(SIZE * SIZE * sizeof(double)); // this would contains two matrix.
 
     fill_randomly(A_h, M, N);
     fill_eye(B_h, M, N);
 
+    PRINT_ARR(A_h);
+    PRINT_ARR(B_h);
+
     err = matrix_multi_tile(A_h, B_h, C_h, M, N, S);
     CUDA_CHECK(err, "Matrix Multi tile");
 
-    assert(matrix_same_sync(A_h, B_h, M, N));
+    PRINT_ARR(C_h);
+
+    assert(matrix_same_sync(A_h, C_h, M, N));
 Error:
     return 0;
 }
