@@ -42,6 +42,9 @@ bool matrix_same(const double* matA_h, const double* matB_h, int M, int N)
 
     matrix_same_kernel KERNEL_ARGS2(dimGrid, dimBlock)(matA_d, matB_d, M, N, &flag);
 
+    err = cudaGetLastError();
+    CUDA_CHECK(err, "Launch kernel matrix_same_kernel failed");
+
     cudaFree(matA_d);
     cudaFree(matB_d);
     return flag;
