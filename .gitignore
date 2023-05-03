@@ -1,8 +1,10 @@
 *
-!*.c
-!*.cpp
-!*.cu
-!*.h
-!Makefile
-!.git*
-!*.md
+!**/*.c
+!**/*.cpp
+!**/*.cu
+!**/*.h
+!**/Makefile
+!**/.git*
+!**/*.md
+!**/CMakeLists.txt
+!**/compile_commands.json
