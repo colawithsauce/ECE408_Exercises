@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.26)
 project(ECE408)
 enable_language(CUDA)
 
