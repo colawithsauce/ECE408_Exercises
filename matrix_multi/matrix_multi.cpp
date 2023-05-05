@@ -9,8 +9,8 @@
 #include <random>
 #include <string>
 
-#include "../cuda_alias.h"
-#include "../matrix_print.h"
+#include "cuda_alias.h"
+#include "matrix_print.h"
 
 // Matrix multiplication cuda kernel, include from matrix_multi_kernel.cu
 extern cudaError_t matrix_multi(const double* A_h, const double* B_h, double* C_h, int M, int N, int S);

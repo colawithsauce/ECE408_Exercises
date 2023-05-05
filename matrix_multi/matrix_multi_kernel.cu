@@ -6,7 +6,7 @@
 #include <cuda_runtime_api.h>
 #include <device_launch_parameters.h>
 
-#include "../cuda_alias.h"
+#include "cuda_alias.h"
 
 __global__ void
 matrix_multi_kernel(double* A_d, double* B_d, double* C_d, int M, int N, int S)
