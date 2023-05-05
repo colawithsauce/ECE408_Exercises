@@ -27,8 +27,10 @@ bool matrix_same(const double* matA_h, const double* matB_h, int M, int N)
 {
     int flag = 1;
     cudaError_t err;
-    dim3 dimGrid = { static_cast<unsigned int>(ceil(M / 32.0)), static_cast<unsigned int>(ceil(N / 32.0)), 1 };
+    dim3 dimGrid = { (unsigned int)ceil(M / 32.0), (unsigned int)ceil(N / 32.0), 1 };
     dim3 dimBlock = { 32, 32, 1 };
+
+    printf("Launch kernel with dimGrid: %d, %d, %d\n", dimGrid.x, dimGrid.y, dimGrid.z);
 
     double *matA_d, *matB_d;
     err = cudaMalloc((void**)&matA_d, sizeof(double) * M * N);
@@ -40,7 +42,7 @@ bool matrix_same(const double* matA_h, const double* matB_h, int M, int N)
     err = cudaMemcpy(matB_d, matB_h, sizeof(double) * M * N, cudaMemcpyHostToDevice);
     CUDA_CHECK(err, "Can't Memcpy");
 
-    matrix_same_kernel KERNEL_ARGS2(dimGrid, dimBlock)(matA_d, matB_d, M, N, &flag);
+    matrix_same_kernel<<<dimGrid, dimBlock>>>(matA_d, matB_d, M, N, &flag);
 
     err = cudaGetLastError();
     CUDA_CHECK(err, "Launch kernel matrix_same_kernel failed");

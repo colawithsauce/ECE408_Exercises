@@ -1,3 +1,4 @@
+#include <cassert>
 #include <random>
 
 template <class T>
@@ -11,6 +12,7 @@ void fill_randomly(T* mat, int M, int N)
 template <class T>
 void fill_eye(T* mat, int M, int N)
 {
+    assert(M == N);
     for (int i = 0; i < M; ++i) {
         for (int j = 0; j < N; ++j) {
             if (i == j)
