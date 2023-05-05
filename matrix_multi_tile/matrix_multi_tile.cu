@@ -56,7 +56,9 @@ matrix_multi_tile_kernel(const double* A_d, const double* B_d, double* C_d, int 
         __syncthreads();
     }
 
-    C_d[(Row * N) + Col] = Cvalue;
+    if (Row < M && Col < N) {
+        C_d[(Row * N) + Col] = Cvalue;
+    }
 }
 
 cudaError_t
