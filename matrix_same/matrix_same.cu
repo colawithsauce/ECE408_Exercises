@@ -11,14 +11,14 @@
 //  flag:
 //      0 means same, and others means not same. User should init flag as 1.
 __global__ void
-matrix_same_kernel(const double* matA_d, const double* matB_d, int M, int N, int* flag)
+matrix_same_kernel(const double* matA_d, const double* matB_d, int M, int N, int* flag_d)
 {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;
 
     if (y < M && x < N) {
         if (matA_d[y * N + x] != matB_d[y * N + x]) {
-            *flag = 0;
+            *flag_d = 0;
         }
     }
 }
@@ -32,20 +32,30 @@ bool matrix_same(const double* matA_h, const double* matB_h, int M, int N)
 
     printf("Launch kernel with dimGrid: %d, %d, %d\n", dimGrid.x, dimGrid.y, dimGrid.z);
 
+    int* flag_d;
     double *matA_d, *matB_d;
+
     err = cudaMalloc((void**)&matA_d, sizeof(double) * M * N);
     CUDA_CHECK(err, "Can't Malloc");
     err = cudaMalloc((void**)&matB_d, sizeof(double) * M * N);
     CUDA_CHECK(err, "Can't Malloc");
+    err = cudaMalloc((void**)&flag_d, sizeof(int));
+    CUDA_CHECK(err, "Can't Malloc");
+
     err = cudaMemcpy(matA_d, matA_h, sizeof(double) * M * N, cudaMemcpyHostToDevice);
     CUDA_CHECK(err, "Can't Memcpy");
     err = cudaMemcpy(matB_d, matB_h, sizeof(double) * M * N, cudaMemcpyHostToDevice);
     CUDA_CHECK(err, "Can't Memcpy");
+    err = cudaMemcpy(flag_d, &flag, sizeof(int), cudaMemcpyHostToDevice);
+    CUDA_CHECK(err, "Can't Memcpy");
 
-    matrix_same_kernel<<<dimGrid, dimBlock>>>(matA_d, matB_d, M, N, &flag);
+    matrix_same_kernel<<<dimGrid, dimBlock>>>(matA_d, matB_d, M, N, flag_d);
 
     err = cudaGetLastError();
     CUDA_CHECK(err, "Launch kernel matrix_same_kernel failed");
+
+    err = cudaMemcpy(&flag, flag_d, sizeof(int), cudaMemcpyDeviceToHost);
+    CUDA_CHECK(err, "Can't Memcpy");
 
     cudaFree(matA_d);
     cudaFree(matB_d);
