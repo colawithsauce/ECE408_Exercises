@@ -6,3 +6,5 @@
 /flake.lock
 /compile_commands.json
 /.cache
+!Dockerfile
+!Makefile
