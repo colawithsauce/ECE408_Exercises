@@ -1,0 +1,17 @@
+# yaml 配置
+services:
+  cuda:
+    build: .
+    command: [ "bash", "./run.sh" ]
+    environment:
+      all_proxy: http://host.docker.internal:7890
+      http_proxy: http://host.docker.internal:7890
+      https_proxy: http://host.docker.internal:7890
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # ports:
+    #   - "7890:7890"
+    volumes:
+      - .:/home/ECE408:rw
+    working_dir: /home/ECE408
+version: '3'
