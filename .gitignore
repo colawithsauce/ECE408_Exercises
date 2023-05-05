@@ -5,3 +5,4 @@
 .gdb_history
 /flake.lock
 /compile_commands.json
+/.cache
