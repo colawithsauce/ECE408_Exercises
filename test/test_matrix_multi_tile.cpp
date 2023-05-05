@@ -2,9 +2,9 @@
 #include "fill_matrix.hpp"
 #include <gtest/gtest.h>
 
-TEST(matrix_multi_tile, correctness_of_square)
+TEST(matrix_multi_tile, correctness_of_square__multi_eye)
 {
-    int M;
+    int M = 16;
     double* matA_h = new double[M * M];
     double* matB_h = new double[M * M];
     double* matC_h = new double[M * M];
