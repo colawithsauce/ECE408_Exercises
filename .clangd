@@ -2,9 +2,9 @@ CompileFlags:
   Add:
     # - --cuda-path=/opt/cuda/
     # - --cuda-gpu-arch=sm_61
-    - -I/opt/cuda/targets/x86_64-linux/include
-    - -L/opt/cuda/targets/x86_64-linux/lib
-    - lcuda
+    # - -I/opt/cuda/targets/x86_64-linux/include
+    # - -L/opt/cuda/targets/x86_64-linux/lib
+    # - lcuda
   Remove:
     - -forward-unknown-to-host-compiler
     - --generate-code=*

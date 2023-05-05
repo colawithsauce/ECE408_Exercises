@@ -8,15 +8,22 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 find_package(Threads)
+
 enable_testing()
 include(GoogleTest)
 
 # Test matrix_multi_tile
-add_executable(matrix_mult_tile "test_matrix_multi_tile.cpp")
-target_link_libraries(matrix_mult_tile GTest::gtest_main Threads::Threads)
-gtest_discover_tests(matrix_mult_tile)
+add_executable(test_matrix_multi_tile "test_matrix_multi_tile.cpp")
+target_link_libraries(test_matrix_multi_tile
+    GTest::gtest_main
+    Threads::Threads
+    matrix_multi_tile)
+gtest_discover_tests(test_matrix_multi_tile)
 
 # Test matrix_same
-add_executable(matrix_same "test_matrix_same.cpp")
-target_link_libraries(matrix_same GTest::gtest_main Threads::Threads)
-gtest_discover_tests(matrix_same)
+add_executable(test_matrix_same "test_matrix_same.cpp")
+target_link_libraries(test_matrix_same
+    GTest::gtest_main
+    Threads::Threads
+    matrix_same)
+gtest_discover_tests(test_matrix_same)

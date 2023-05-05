@@ -1,4 +1,4 @@
-#include "cuda_alias.h"
+#include "cuda_alias.hpp"
 #include <cuda_device_runtime_api.h>
 #include <cuda_runtime.h>
 

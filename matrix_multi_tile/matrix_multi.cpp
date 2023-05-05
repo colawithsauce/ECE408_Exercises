@@ -1,5 +1,5 @@
-#include "../cuda_alias.h"
-#include "../matrix_print.h"
+#include "cuda_alias.hpp"
+#include "matrix_print.hpp"
 
 #include <cassert>
 #include <cstdio>
