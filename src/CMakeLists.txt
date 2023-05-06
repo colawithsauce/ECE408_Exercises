@@ -9,3 +9,10 @@ set(SRC
 )
 
 add_library(ece408 SHARED ${SRC})
+
+set(CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES
+    "/opt/cuda/include;/usr/local/cuda/include")
+
+target_include_directories(ece408
+    PUBLIC ${CMAKE_SOURCE_DIR}/inc
+)

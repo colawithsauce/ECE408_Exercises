@@ -12,6 +12,13 @@ find_package(Threads)
 enable_testing()
 include(GoogleTest)
 
+
+set(CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES
+    "/opt/cuda/include;/usr/local/cuda/include")
+include_directories(
+    ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
+    ${CMAKE_SOURCE_DIR}/inc
+)
 link_libraries(ece408)
 
 # Test matrix_same

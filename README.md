@@ -92,5 +92,5 @@ $ make docker
 Or if you doesn't setup your docker image:
 
 ``` sh
-$ make host # or just make
+$ make host
 ```
