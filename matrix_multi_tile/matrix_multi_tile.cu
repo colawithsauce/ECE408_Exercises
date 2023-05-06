@@ -62,7 +62,7 @@ matrix_multi_tile_kernel(const double* A_d, const double* B_d, double* C_d, int 
 }
 
 cudaError_t
-matrix_multi_tile(const double* A_h, const double* B_h, double* C_h, int M, int N, int S)
+matrix_multi_tile(const double* A_h, const double* B_h, double* C_h, int M, int S, int N)
 {
     double *A_d, *B_d, *C_d;
     cudaError_t err = cudaSuccess;
@@ -70,6 +70,7 @@ matrix_multi_tile(const double* A_h, const double* B_h, double* C_h, int M, int 
     dim3 dimGrid = { (unsigned int)ceil(N / 32.0), (unsigned int)ceil(M / 32.0), 1 };
     dim3 dimBlock = { 32, 32, 1 };
 
+#ifdef DEBUG
     printf("Launching kernel with dimGrid: %d, %d, %d\n", dimGrid.x, dimGrid.y, dimGrid.z);
 
     cudaDeviceProp prop;
@@ -80,6 +81,8 @@ matrix_multi_tile(const double* A_h, const double* B_h, double* C_h, int M, int 
     printf("The limits of global memory in divice: %zu\n", prop.totalGlobalMem);
 
     printf("Mallocing %d * %d * sizeof(double) = %lu bytes of memory.\n", M, N, M * S * sizeof(double));
+#endif // !DEBUG
+
     err = cudaMalloc((void**)&A_d, M * S * sizeof(double));
     CUDA_CHECK(err, "Can't cudaMalloc");
 
@@ -94,7 +97,6 @@ matrix_multi_tile(const double* A_h, const double* B_h, double* C_h, int M, int 
     err = cudaMemcpy(B_d, B_h, N * S * sizeof(double), cudaMemcpyHostToDevice);
     CUDA_CHECK(err, "Can't cudaMemcpy");
 
-    // FIXME Github issue #3
     matrix_multi_tile_kernel<<<dimGrid, dimBlock, 1024 * 2 * sizeof(double)>>>(A_d, B_d, C_d, M, N, S, 1024, 32);
 
     err = cudaGetLastError();

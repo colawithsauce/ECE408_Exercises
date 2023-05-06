@@ -2,7 +2,7 @@
 #include <cuda_device_runtime_api.h>
 #include <cuda_runtime.h>
 
-#define msg "ERROR"
+#define TOLERANCE 0.0000001
 
 // check two matrix is same or not.
 // input:
@@ -17,7 +17,7 @@ matrix_same_kernel(const double* matA_d, const double* matB_d, int M, int N, int
     int y = blockIdx.y * blockDim.y + threadIdx.y;
 
     if (y < M && x < N) {
-        if (matA_d[y * N + x] != matB_d[y * N + x]) {
+        if (abs(matA_d[y * N + x] - matB_d[y * N + x]) > TOLERANCE) {
             *flag_d = 0;
         }
     }
