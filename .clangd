@@ -3,7 +3,7 @@ CompileFlags:
     - -forward-unknown-to-host-compiler
     - --generate-code=*
     - -Xcompiler=-fPIC
-    - --options-file
+    # - --options-file
 
 InlayHints:
   DeducedTypes: Yes
