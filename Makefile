@@ -6,6 +6,10 @@
 
 all:
 	@echo "DIR=`pwd`" |tee .env
-	@docker-compose up
+	@docker compose run cuda
+
+docker-image: ./Dockerfile
+	@echo "DIR=`pwd`" |tee .env
+	@docker compose build
 
 # end
