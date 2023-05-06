@@ -2,6 +2,10 @@
 #define __ECE408__
 #include <cuda_runtime_api.h>
 
+// Matrix Addition
+cudaError_t
+mat_add(const double* A_h, const double* B_h, double* C_h, int M, int N);
+
 // Vector multiplication
 cudaError_t vector_multi_launcher(float* A_h, const float* B_h, const float* v_h, int M, int N);
 

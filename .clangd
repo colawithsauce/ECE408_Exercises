@@ -4,8 +4,3 @@ CompileFlags:
     - --generate-code=*
     - -Xcompiler=-fPIC
     # - --options-file
-
-InlayHints:
-  DeducedTypes: Yes
-  Enabled: Yes
-  ParameterNames: Yes

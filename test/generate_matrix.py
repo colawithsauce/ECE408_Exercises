@@ -2,14 +2,14 @@
 import numpy as np
 from numpy.random import rand
 from numpy.typing import NDArray
-M = 3
+M = 4
 S = 4
-N = 3
+N = 4
 
 A = np.array([[rand() for j in range(S)] for i in range(M)]) # M x S
 B = np.array([[rand() for j in range(N)] for i in range(S)]) # S x N
 
-C = A @ B
+C = A + B
 
 def print_arr_csty(mat: NDArray, name: str):
     print("double {}[{}][{}] = {{".format(name, mat.shape[0], mat.shape[1]), end="")
