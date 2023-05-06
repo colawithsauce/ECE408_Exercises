@@ -34,7 +34,7 @@ Build cuda_12.1.r12.1/compiler.32688072_0
 
 Make sure these two cuda versions are identical, (12.1 in my case).
 
-### docker & nvidia-container
+### docker & nvidia-container (Optional)
 Because of a [bug from archlinux upstream](https://bugs.archlinux.org/task/78362), we have to use docker as a workaround to compile cuda code. Although this is an workaround as original purpose, it quite provide a stable environment for us.
 
 We can setup our nvidia docker environment by 3 different ways, user can check it on archwiki:docker by searching nvidia.
@@ -47,7 +47,7 @@ If at the former step, your CUDA version is not 12.1, you must change the tag of
 
 ``` dockerfile
 FROM nvidia/cuda:11.1.1-devel-ubi8 # It just an example, i don't know if nvidia/cuda have this tag or not, please check it on dockerhub.
-RUN dnf install -y cmake 
+RUN dnf install -y cmake python39
 ```
 
 ## Launch
@@ -59,7 +59,7 @@ Remove all `proxy` stuff in `Dockerfile` and `docker-compose.yaml` like this:
 `Dockerfile`:
 ``` dockerfile
 FROM nvidia/cuda:12.1.1-devel-ubi8
-RUN dnf install -y cmake
+RUN dnf install -y cmake python39
 ```
 
 `docker-compose.yaml`:
@@ -69,6 +69,7 @@ services:
   cuda:
     build: .
     command: [ "bash", "./run.sh" ]
+    user: "${USER_NAME}:${GROUP}"
     volumes:
       - .:${DIR}:rw
     working_dir: ${DIR}
@@ -85,5 +86,11 @@ $ make docker-image
 And build the project and test it by:
 
 ``` sh
-$ make
+$ make docker
+```
+
+Or if you doesn't setup your docker image:
+
+``` sh
+$ make host # or just make
 ```

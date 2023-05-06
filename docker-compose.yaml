@@ -9,8 +9,7 @@ services:
       https_proxy: http://host.docker.internal:7890
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    # ports:
-    #   - "7890:7890"
+    user: "${USER_NAME}:${GROUP}"
     volumes:
       - .:${DIR}:rw
     working_dir: ${DIR}

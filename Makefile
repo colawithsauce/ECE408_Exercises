@@ -4,12 +4,16 @@
 # @file
 # @version 0.1
 
-all:
-	@echo "DIR=`pwd`" |tee .env
+host:
+	bash run.sh
+
+docker:
+	@echo "DIR=`pwd`" > .env # Setting environment variables for docker-compose.yaml
+	@echo "USER_NAME=`id -u ${USER}`" >> .env
+	@echo "GROUP=`id -g ${USER}`" >> .env
 	@docker compose run cuda
 
-docker-image: ./Dockerfile
-	@echo "DIR=`pwd`" |tee .env
+docker-image: Dockerfile
 	@docker compose build
 
 # end
