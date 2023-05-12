@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include <cuda_runtime_api.h>
 #include <device_types.h>
 
@@ -18,6 +20,10 @@ mat_mul_coarsening_kernel(const double* M, const double* N, double* P, int width
     // Identity the row and column of the P element to work on
     int row = by * TILE_WIDTH + ty; // Keep same row
     int colStart = bx * TILE_WIDTH * COARSE_FACTOR + tx; // to coarsen tile means to "fatten" the working area each time here.
+
+    if (colStart >= width) {
+        return;
+    }
 
     // Initialize Pvalue for all output elements
     double Pvalue[COARSE_FACTOR];
