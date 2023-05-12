@@ -48,3 +48,8 @@ gtest_discover_tests(test_matrix_multi_tile_simple)
 add_executable(test_matrix_multi_tile "test_matrix_multi_tile.cpp")
 target_link_libraries(test_matrix_multi_tile GTest::gtest_main Threads::Threads)
 gtest_discover_tests(test_matrix_multi_tile)
+
+# Test mat_mul_coarse
+add_executable(test_mat_mul_coarse "test_mat_mul_coarse.cpp")
+target_link_libraries(test_mat_mul_coarse GTest::gtest_main Threads::Threads)
+gtest_discover_tests(test_mat_mul_coarse)

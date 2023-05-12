@@ -1,8 +1,6 @@
 #include "cuda_alias.hpp"
 #include <cuda_runtime_api.h>
 
-#include <__clang_cuda_builtin_vars.h>
-
 const int BLOCK_WIDTH = 10;
 
 __global__ void

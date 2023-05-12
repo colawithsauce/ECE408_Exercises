@@ -9,8 +9,6 @@
 #include <device_launch_parameters.h>
 #include <device_types.h>
 
-#define TILE_WIDTH 2
-
 // @param:
 //   A_d: M * S matrix
 //   B_d: S * N matrix

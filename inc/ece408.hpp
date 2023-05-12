@@ -17,6 +17,21 @@ matrix_multi_tile_simple(const double* A_h, const double* B_h, double* C_h, int 
 cudaError_t
 matrix_multi_tile(const double* A_h, const double* B_h, double* C_h, int M, int S, int N);
 
+/* mat_mul_coarsening:
+ *
+ *  @desc: Matrix multiplication function integated with tiled
+ *  and coarsening techenology.
+ *
+ *  NOTE: This function works based on following assumptions for params:
+ *
+ *  1. A_h, B_h, C_h all matrix with shape width x width.
+ *
+ *  2. TILE_WIDTH is 32, and `width` whould be able to fully divide by 32.
+ *
+ *  */
+cudaError_t
+mat_mul_coarsening(const double* A_h, const double* B_h, double* C_h, int width);
+
 // Test if matrix is same
 bool matrix_same(const double* matA_h, const double* matB_h, int M, int N);
 
