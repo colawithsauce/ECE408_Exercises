@@ -3,4 +3,5 @@ CompileFlags:
     - -forward-unknown-to-host-compiler
     - --generate-code=*
     - -Xcompiler=-fPIC
+    - -ccbin=*
     # - --options-file
