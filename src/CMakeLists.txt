@@ -8,12 +8,16 @@ set(SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/mat_mul_coarse.cu
     # ${CMAKE_CURRENT_SOURCE_DIR}/.cpp
 )
-
-add_library(ece408 SHARED ${SRC})
-
 set(CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES
     "/opt/cuda/include;/usr/local/cuda/include")
 
-target_include_directories(ece408
-    PUBLIC ${CMAKE_SOURCE_DIR}/inc
-)
+add_library(ece408 SHARED ${SRC})
+target_include_directories(ece408 PUBLIC ${CMAKE_SOURCE_DIR}/inc)
+target_link_libraries(ece408 PRIVATE tools)
+
+add_library(tools SHARED ${CMAKE_CURRENT_SOURCE_DIR}/tools.cu)
+target_link_libraries(tools PRIVATE cuda)
+target_include_directories(
+    tools PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
+    ${CMAKE_SOURCE_DIR}/inc)
+target_link_directories(tools PRIVATE "/opt/cuda/targets/x86_64-linux/lib")

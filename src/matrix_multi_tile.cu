@@ -1,4 +1,6 @@
 #include "cuda_alias.hpp"
+#include "tools.hpp"
+
 #include <bits/types/clock_t.h>
 #include <cassert>
 #include <chrono>
