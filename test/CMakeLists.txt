@@ -27,6 +27,11 @@ include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
                     ${CMAKE_SOURCE_DIR}/inc)
 link_libraries(ece408)
 
+# grep props
+add_executable(props "props.cu")
+target_link_libraries(props GTest::gtest_main Threads::Threads tools)
+gtest_discover_tests(props)
+
 # Test mat_add
 add_executable(test_mat_add "test_mat_add.cpp")
 target_link_libraries(test_mat_add GTest::gtest_main Threads::Threads)

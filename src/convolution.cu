@@ -32,6 +32,15 @@ no_opt_kernel(const double* N, const double* M, double* P, int size, const int M
     P[(row_i + halo) * size + col_i + halo] = Pvalue;
 }
 
+static __global__ void
+optimized_kernel(const double* N, const double* M, double* P, int size, const int MASK_WIDTH)
+{
+    int halo = MASK_WIDTH / 2;
+    // The 3rd strategy.
+    int row_o = threadIdx.y + blockIdx.y * blockDim.y;
+    int col_o = threadIdx.x + blockIdx.x * blockDim.x;
+}
+
 /* Convolution function */
 namespace convolution {
 cudaError_t

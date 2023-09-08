@@ -1,7 +1,8 @@
-#!/usr/bin/env pypy3
+#!/usr/bin/env python3
 import numpy as np
 from numpy.random import rand
 from numpy.typing import NDArray
+
 M = 4
 S = 4
 N = 4
@@ -18,6 +19,7 @@ def print_arr_csty(mat: NDArray, name: str):
             print(", ", end="")
         print("{}".format(elem), end="")
     print("};\n")
+
 
 print_arr_csty(A, "A")
 print_arr_csty(B, "B")
