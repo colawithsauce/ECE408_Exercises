@@ -14,11 +14,13 @@
 #define KERNEL_ARGS4(grid, block, sh_mem, stream)
 #endif
 
-#define PRINT(msg) printf("ERROR: %s:\t %s:\nat : FILE %s\nat: LINE %d\n", cudaGetErrorString(err), msg, __FILE__, __LINE__);
-#define CUDA_CHECK(err, msg)  \
-    if (err != cudaSuccess) { \
-        PRINT(msg);           \
-        goto Error;           \
+#define PRINT(msg)                                                                                                     \
+    printf("ERROR: %s:\t %s:\nat : FILE %s\nat: LINE %d\n", cudaGetErrorString(err), msg, __FILE__, __LINE__);
+#define CUDA_CHECK(err, msg)                                                                                           \
+    if (err != cudaSuccess)                                                                                            \
+    {                                                                                                                  \
+        PRINT(msg);                                                                                                    \
+        goto Error;                                                                                                    \
     }
 
 #endif // !__CUDA_ALIAS_H__
