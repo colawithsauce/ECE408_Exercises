@@ -22,15 +22,29 @@ template <typename T> std::string matrix2str(T *mat, int y, int x)
     return s;
 }
 
-#define PRINT_ARR(ARR)                                                                                                 \
+#define PRINT_ARR(ARR, HEIGHT, WIDTH)                                                                                  \
     printf("Array %s :\n", #ARR);                                                                                      \
-    for (int i = 0; i != SIZE; i++)                                                                                    \
+    for (int i = 0; i != HEIGHT; i++)                                                                                  \
     {                                                                                                                  \
-        for (int j = 0; j != SIZE; j++)                                                                                \
+        for (int j = 0; j != WIDTH; j++)                                                                               \
         {                                                                                                              \
             if (j != 0)                                                                                                \
                 printf(" ");                                                                                           \
-            printf("%lf", ARR[i * SIZE + j]);                                                                          \
+            printf("%lf", ARR[i * WIDTH + j]);                                                                         \
+        }                                                                                                              \
+        printf("\n");                                                                                                  \
+    }                                                                                                                  \
+    printf("\n");
+
+#define PRINT_MAT(ARR, HEIGHT, WIDTH)                                                                                  \
+    printf("Array %s :\n", #ARR);                                                                                      \
+    for (int i = 0; i != HEIGHT; i++)                                                                                  \
+    {                                                                                                                  \
+        for (int j = 0; j != WIDTH; j++)                                                                               \
+        {                                                                                                              \
+            if (j != 0)                                                                                                \
+                printf(" ");                                                                                           \
+            printf("%lf", ARR[i][j]);                                                                                  \
         }                                                                                                              \
         printf("\n");                                                                                                  \
     }                                                                                                                  \

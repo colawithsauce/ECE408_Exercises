@@ -1,43 +1,50 @@
+#include <algorithm>
+#include <assert.h>
 #include <cuda_runtime_api.h>
+#include <device_types.h>
 
 #include "cuda_alias.hpp"
 
-const int BLOCK_WIDTH = 10;
+const int BLOCK_WIDTH = 16;
 
-__global__ void BlockTransposeKernel(double *A_elements, int A_width, int A_height)
+__global__ void matTransposeKernel(double *in_d, double *out_d, int width, int height)
 {
-    __shared__ double blockA[BLOCK_WIDTH][BLOCK_WIDTH];
+    int i = threadIdx.y + blockIdx.y * blockDim.y;
+    int j = threadIdx.x + blockIdx.x * blockDim.x;
 
-    int baseIdx = blockIdx.x * BLOCK_WIDTH + threadIdx.x;
-    baseIdx += (blockIdx.y * BLOCK_WIDTH + threadIdx.y) * A_width;
-
-    blockA[threadIdx.y][threadIdx.x] = A_elements[baseIdx];
-
-    A_elements[baseIdx] = blockA[threadIdx.x][threadIdx.y];
+    if (j < width && i < height)
+    {
+        out_d[i + j * height] = in_d[i * width + j];
+    }
 }
 
-cudaError_t BlockTranspose(double *A_elements, int A_width, int A_height)
+cudaError_t matTranspose(double *in_h, double *out_h, int width, int height)
 {
-    double *A_d;
+    double *in_d, *out_d;
     cudaError_t err = cudaSuccess;
+
+    int T = std::max(width, height);
 
     dim3 dimBlock, dimGrid;
     dimBlock = {BLOCK_WIDTH, BLOCK_WIDTH, 1};
-    dimGrid = {(unsigned int)ceil((float)A_width / dimBlock.x), (unsigned int)ceil((float)A_height / dimBlock.y), 1};
+    dimGrid = {(unsigned int)ceil((float)T / dimBlock.x), (unsigned int)ceil((float)T / dimBlock.y), 1};
 
-    err = cudaMalloc(&A_d, A_width * A_height * sizeof(double));
+    err = cudaMalloc(&in_d, width * height * sizeof(double));
+    CUDA_CHECK(err, "can't cudaMalloc!");
+    err = cudaMalloc(&out_d, width * height * sizeof(double));
     CUDA_CHECK(err, "can't cudaMalloc!");
 
-    err = cudaMemcpy(A_d, A_elements, A_width * A_height * sizeof(double), cudaMemcpyHostToDevice);
+    err = cudaMemcpy(in_d, in_h, width * height * sizeof(double), cudaMemcpyHostToDevice);
     CUDA_CHECK(err, "Can't cudaMemcpy!");
 
-    BlockTransposeKernel<<<dimGrid, dimBlock>>>(A_d, A_width, A_height);
+    matTransposeKernel<<<dimGrid, dimBlock>>>(in_d, out_d, width, height);
 
-    err = cudaMemcpy(A_elements, A_d, A_width * A_height * sizeof(double), cudaMemcpyDeviceToHost);
+    err = cudaMemcpy(out_h, out_d, width * height * sizeof(double), cudaMemcpyDeviceToHost);
     CUDA_CHECK(err, "Can't cudaMemcpy!");
 
 Error:
-    cudaFree(A_d);
+    cudaFree(in_d);
+    cudaFree(out_d);
 
     return err;
 }

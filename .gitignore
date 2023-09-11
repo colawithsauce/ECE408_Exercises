@@ -7,5 +7,7 @@
 /compile_commands.json
 /.cache
 /.ccls-cache
+/cmake*
+.idea
 !Dockerfile
 !Makefile

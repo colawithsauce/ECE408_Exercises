@@ -28,7 +28,7 @@ include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
 link_libraries(ece408)
 
 # grep props
-add_executable(props "props.cu")
+add_executable(props "props.cu" test_mat_transpose.cpp)
 target_link_libraries(props GTest::gtest_main Threads::Threads tools)
 gtest_discover_tests(props)
 
