@@ -7,14 +7,15 @@ M = 32
 S = 16
 N = 4
 
-A = np.array([[rand() for _ in range(S)] for _ in range(M)]) # M x S
+A = np.array([[rand() for _ in range(S)] for _ in range(M)])  # M x S
 # B = np.array([[rand() for _ in range(N)] for _ in range(S)]) # S x N
 
 C = A.T
 
+
 def print_arr_csty(mat: NDArray, name: str):
     print("double {}[{}][{}] = {{".format(name, mat.shape[0], mat.shape[1]), end="")
-    for (i, elem) in enumerate(mat.flatten()):
+    for i, elem in enumerate(mat.flatten()):
         if i != 0:
             print(", ", end="")
         print("{:.2f}".format(elem), end="")

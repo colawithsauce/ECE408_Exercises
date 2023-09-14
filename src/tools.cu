@@ -8,12 +8,12 @@
 #include "cuda_alias.hpp"
 #include "tools.hpp"
 
-const char *err_msg = "ERROR";
+const char* err_msg = "ERROR";
 
-namespace tools
-{
+namespace tools {
 
-kerArgs getDimBlock()
+kerArgs
+getDimBlock()
 {
     kerArgs args;
 
@@ -27,10 +27,11 @@ kerArgs getDimBlock()
     printf("Max shared memory per SM: %lu\n", prop.sharedMemPerMultiprocessor);
 
     // We only consider the threads per SM
-    args.dimGrid.x = args.dimGrid.y = (int)floor(sqrt(prop.maxThreadsPerMultiProcessor / 32.0));
+    args.dimGrid.x = args.dimGrid.y =
+      (int)floor(sqrt(prop.maxThreadsPerMultiProcessor / 32.0));
     args.dimGrid.z = 1;
 
-    args.dimBlock = {32, 32, 1};
+    args.dimBlock = { 32, 32, 1 };
 
 Error:
     return args;

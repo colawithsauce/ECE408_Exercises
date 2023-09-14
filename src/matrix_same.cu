@@ -10,42 +10,53 @@
 // output:
 //  flag:
 //      0 means same, and others means not same. User should init flag as 1.
-__global__ void matrix_same_kernel(const double *matA_d, const double *matB_d, int M, int N, int *flag_d)
+__global__ void
+matrix_same_kernel(const double* matA_d,
+                   const double* matB_d,
+                   int M,
+                   int N,
+                   int* flag_d)
 {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (y < M && x < N)
-    {
-        if (abs(matA_d[y * N + x] - matB_d[y * N + x]) > TOLERANCE)
-        {
+    if (y < M && x < N) {
+        if (abs(matA_d[y * N + x] - matB_d[y * N + x]) > TOLERANCE) {
             *flag_d = 0;
         }
     }
 }
 
-bool matrix_same(const double *matA_h, const double *matB_h, int M, int N)
+bool
+matrix_same(const double* matA_h, const double* matB_h, int M, int N)
 {
     int flag = 1;
     cudaError_t err;
-    dim3 dimGrid = {(unsigned int)ceil(M / 32.0), (unsigned int)ceil(N / 32.0), 1};
-    dim3 dimBlock = {32, 32, 1};
+    dim3 dimGrid = { (unsigned int)ceil(M / 32.0),
+                     (unsigned int)ceil(N / 32.0),
+                     1 };
+    dim3 dimBlock = { 32, 32, 1 };
 
-    printf("Launch kernel with dimGrid: %d, %d, %d\n", dimGrid.x, dimGrid.y, dimGrid.z);
+    printf("Launch kernel with dimGrid: %d, %d, %d\n",
+           dimGrid.x,
+           dimGrid.y,
+           dimGrid.z);
 
-    int *flag_d;
+    int* flag_d;
     double *matA_d, *matB_d;
 
-    err = cudaMalloc((void **)&matA_d, sizeof(double) * M * N);
+    err = cudaMalloc((void**)&matA_d, sizeof(double) * M * N);
     CUDA_CHECK(err, "Can't Malloc");
-    err = cudaMalloc((void **)&matB_d, sizeof(double) * M * N);
+    err = cudaMalloc((void**)&matB_d, sizeof(double) * M * N);
     CUDA_CHECK(err, "Can't Malloc");
-    err = cudaMalloc((void **)&flag_d, sizeof(int));
+    err = cudaMalloc((void**)&flag_d, sizeof(int));
     CUDA_CHECK(err, "Can't Malloc");
 
-    err = cudaMemcpy(matA_d, matA_h, sizeof(double) * M * N, cudaMemcpyHostToDevice);
+    err = cudaMemcpy(
+      matA_d, matA_h, sizeof(double) * M * N, cudaMemcpyHostToDevice);
     CUDA_CHECK(err, "Can't Memcpy");
-    err = cudaMemcpy(matB_d, matB_h, sizeof(double) * M * N, cudaMemcpyHostToDevice);
+    err = cudaMemcpy(
+      matB_d, matB_h, sizeof(double) * M * N, cudaMemcpyHostToDevice);
     CUDA_CHECK(err, "Can't Memcpy");
     err = cudaMemcpy(flag_d, &flag, sizeof(int), cudaMemcpyHostToDevice);
     CUDA_CHECK(err, "Can't Memcpy");

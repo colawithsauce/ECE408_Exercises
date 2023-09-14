@@ -7,14 +7,13 @@
 #include <time.h>
 
 // Caculate A = B * v, where B is M x N, v is N x 1, and A is M x 1
-__global__ void vector_multi(float *A_d, float *B_d, float *v_d, int M, int N)
+__global__ void
+vector_multi(float* A_d, float* B_d, float* v_d, int M, int N)
 {
     unsigned int i = blockDim.x * blockIdx.x + threadIdx.x;
-    if (i < M)
-    {
+    if (i < M) {
         float sum = 0;
-        for (unsigned int x = 0; x != N; ++x)
-        {
+        for (unsigned int x = 0; x != N; ++x) {
             sum += B_d[i * N + x] * v_d[x];
         }
 
@@ -23,20 +22,25 @@ __global__ void vector_multi(float *A_d, float *B_d, float *v_d, int M, int N)
 }
 
 // launcher of vector_multi
-cudaError_t vector_multi_launcher(float *A_h, const float *B_h, const float *v_h, int M, int N)
+cudaError_t
+vector_multi_launcher(float* A_h,
+                      const float* B_h,
+                      const float* v_h,
+                      int M,
+                      int N)
 {
     float *A_d, *B_d, *v_d;
     cudaError_t err = cudaSuccess;
     clock_t start;
     float duration;
 
-    err = cudaMalloc((void **)&A_d, M * sizeof(float));
+    err = cudaMalloc((void**)&A_d, M * sizeof(float));
     CUDA_CHECK(err, "failed to malloc");
 
-    err = cudaMalloc((void **)&B_d, M * N * sizeof(float));
+    err = cudaMalloc((void**)&B_d, M * N * sizeof(float));
     CUDA_CHECK(err, "failed to malloc");
 
-    err = cudaMalloc((void **)&v_d, N * sizeof(float));
+    err = cudaMalloc((void**)&v_d, N * sizeof(float));
     CUDA_CHECK(err, "failed to malloc");
 
     err = cudaMemcpy(B_d, B_h, M * N * sizeof(float), cudaMemcpyHostToDevice);

@@ -1,10 +1,10 @@
 #include <cuda_runtime_api.h>
-namespace tools
-{
+namespace tools {
 struct kerArgs
 {
     dim3 dimBlock, dimGrid;
 };
 
-kerArgs getDimBlock();
+kerArgs
+getDimBlock();
 } // namespace tools
