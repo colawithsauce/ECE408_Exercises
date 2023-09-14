@@ -25,7 +25,7 @@ set(CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES
     "/opt/cuda/include;/usr/local/cuda/include")
 include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
                     ${CMAKE_SOURCE_DIR}/inc)
-link_libraries(ece408)
+link_libraries(ece408 GTest::gtest_main Threads::Threads)
 
 # grep props
 add_executable(props "props.cu" test_mat_transpose.cpp)
@@ -58,3 +58,12 @@ gtest_discover_tests(test_matrix_multi_tile)
 add_executable(test_mat_mul_coarse "test_mat_mul_coarse.cpp")
 target_link_libraries(test_mat_mul_coarse GTest::gtest_main Threads::Threads)
 gtest_discover_tests(test_mat_mul_coarse)
+
+# Test matrix transpose
+add_executable(test_mat_transpose "test_mat_transpose.cpp")
+target_link_libraries(test_mat_transpose GTest::gtest_main Threads::Threads)
+gtest_discover_tests(test_mat_transpose)
+
+# Test reduction
+add_executable(test_reduction "test_reduction.cpp")
+gtest_discover_tests(test_reduction)
