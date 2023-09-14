@@ -52,6 +52,9 @@ mat_mul_coarsening(const double* A_h,
 cudaError_t
 matTranspose(double* in_h, double* out_h, int width, int height);
 
+cudaError_t
+reduction_kernel_1_launcher(float* in, float* out, int size);
+
 // Test if matrix is same
 bool
 matrix_same(const double* matA_h, const double* matB_h, int M, int N);

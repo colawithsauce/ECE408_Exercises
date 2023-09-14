@@ -3,34 +3,72 @@
 
 #include "cuda_alias.hpp"
 
+/* NOTE: This is not an multi-block kernel. which means it can't handle more
+ * than one block in put data.
+ *
+ * The multi-block version would be introduced later in this Chapter!!!
+ *
+ * NOTE: This kernel assume the size of input become the result of pow(2, n) and
+ * that the blockDim.x become ~size / 2~.
+ * */
 __global__ void
-reduction_kernel(float* in, int size, float func(float, float))
+reduction_kernel_1(float* in, float* out, int size)
 {
-    int i = threadIdx.x + blockIdx.x * blockDim.x;
-    // we are writing programs for kernel.
-    for (int stride = 1; stride <= size / 2; stride *= 2) {
-        if (i % (2 * stride) == 0) {
-            in[i] = func(in[i], in[i + stride]);
+    unsigned int i = 2 * threadIdx.x;
+
+    for (unsigned int stride = 1; stride <= blockDim.x; stride *= 2) {
+        if (i % stride == 0) {
+            in[i] += in[stride + i];
         }
+
+        __syncthreads();
+    }
+
+    if (threadIdx.x == 0) {
+        *out = in[0];
     }
 }
 
-float
-reduction_kernel_launcher(float* in, int size, float func(float, float))
+// __global__ void
+// reduction_kernel_2(float* input, float* output)
+// {
+//     unsigned int i = threadIdx.x;
+// }
+
+cudaError_t
+reduction_kernel_1_launcher(float* in, float* out, int size)
 {
-    float result;
     dim3 dimBlock, dimGrid;
-    CUDA_INIT_VAR(float, in, size);
-    dimBlock = { 32, 1, 1 };
-    dimGrid = { (unsigned int)ceil(((float)size) / dimBlock.x), 1, 1 };
+    cudaError_t err = cudaSuccess;
 
-    reduction_kernel<<<dimBlock, dimGrid>>>(in_d, size, func);
+    float *in_d = nullptr, *out_d = nullptr;
+    err = cudaMalloc((void**)&in_d, sizeof(float) * size);
+    CUDA_CHECK(err, "Malloc failed!");
 
-    cudaMemcpy(
-      (void*)&result, (const void*)in_d, sizeof(float), cudaMemcpyDeviceToHost);
-    return result;
+    err = cudaMalloc((void**)&out_d, sizeof(float) * 1);
+    CUDA_CHECK(err, "Malloc failed!");
+
+    err = cudaMemcpy(
+      (void*)in_d, (void*)in, sizeof(float) * size, cudaMemcpyHostToDevice);
+    CUDA_CHECK(err, "Memcpy failed!");
+
+    err = cudaMemcpy(
+      (void*)out_d, (void*)out, sizeof(float) * 1, cudaMemcpyHostToDevice);
+    CUDA_CHECK(err, "Memcpy failed!");
+
+    dimBlock = { (uint)size / 2, 1, 1 };
+    dimGrid = { 1, 1, 1 };
+
+    printf("Launching kernel with dimGrid %u ...\n", dimGrid.x);
+    reduction_kernel_1<<<dimGrid, dimBlock>>>(in_d, out_d, size);
+
+    err = cudaGetLastError();
+    CUDA_CHECK(err, "Error when calling kernel");
+
+    cudaMemcpy(out, out_d, sizeof(float), cudaMemcpyDeviceToHost);
 
 Error:
-    CUDA_FREE_VAR(in);
-    return 0;
+    cudaFree(in_d);
+    cudaFree(out_d);
+    return err;
 }
