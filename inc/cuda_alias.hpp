@@ -27,17 +27,4 @@
         goto Error;                                                            \
     }
 
-#define CUDA_INIT_VAR(type, var, size)                                         \
-    type* var##_d = nullptr;                                                   \
-    cudaError_t err = cudaSuccess;                                             \
-    err = cudaMalloc((void**)&var##_d, sizeof(float) * size);                  \
-    CUDA_CHECK(err, "Failed to malloc");                                       \
-    err = cudaMemcpy((void*)var##_d,                                           \
-                     (void*)var,                                               \
-                     sizeof(float) * size,                                     \
-                     cudaMemcpyHostToDevice);                                  \
-    CUDA_CHECK(err, "Failed to memcpy from host to device")
-
-#define CUDA_FREE_VAR(var) cudaFree((void*)var##_d)
-
 #endif // !__CUDA_ALIAS_H__
