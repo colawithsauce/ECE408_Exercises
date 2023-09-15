@@ -1,7 +1,7 @@
 #include "ece408.hpp"
 #include "gtest/gtest.h"
 
-#define SIZE 64
+#define SIZE 128
 
 float
 reduction(float* arr, int size)
